@@ -49,6 +49,12 @@ public:
         {
             y = y + speed;
         };
+        RestrictMovement();
+    };
+
+protected:
+    void RestrictMovement()
+    {
         if (y <= 0)
         {
             y = 0;
@@ -59,8 +65,28 @@ public:
         };
     };
 };
+// using inheritance
+class NpcPaddle : public Paddle
+{
+public:
+    void update_position(int ball_y)
+    {
+        // algorithm for ai
+        if (y + height / 2 > ball_y)
+        {
+
+            y = y - speed;
+        }
+        if (y + height / 2 <= ball_y)
+        {
+            y = y + speed;
+        };
+        RestrictMovement();
+    };
+};
 Ball ball;
 Paddle player;
+NpcPaddle npc;
 
 int main()
 {
@@ -83,6 +109,11 @@ int main()
     player.x = screen_width - player.width - 10;
     player.y = screen_height / 2 - player.height / 2;
     player.speed = 6;
+    npc.height = 120;
+    npc.width = 25;
+    npc.x = 10;
+    npc.y = screen_height / 2 - npc.height / 2;
+    npc.speed = 6;
     // Draw paddle
     // game loop
     while (WindowShouldClose() == false)
@@ -90,14 +121,15 @@ int main()
         BeginDrawing();
         ball.update_position();
         player.update_position();
+        npc.update_position(ball.y);
         // middl2 line
         ClearBackground(BLACK);
         DrawLine(screen_width / 2, 0, screen_width / 2, screen_height, WHITE);
         // draww ball
         ball.Draw();
-
-        const int paddle_height = 120;
-        DrawRectangle(10, screen_height / 2 - paddle_height / 2, 25, paddle_height, WHITE);
+        npc.Draw();
+        // const int paddle_height = 120;
+        // DrawRectangle(10, screen_height / 2 - paddle_height / 2, 25, paddle_height, WHITE);
         // left
         player.Draw();
         // DrawRectangle(screen_width - 35, screen_height / 2 - paddle_height / 2, 25, paddle_height, WHITE);
