@@ -14,9 +14,23 @@ public:
         // draw ball
         DrawCircle(x, y, raduis, RED);
     };
-    void update_position(){
-
+    void update_position()
+    {
+        x += speed_x;
+        y += speed_y;
+        // Checking collision with edges of game window and changing direction of ball
+        if (y + raduis >= GetScreenHeight() || y - raduis <= 0)
+        {
+            speed_y *= -1;
+        };
+        if (x + raduis >= GetScreenWidth() || x - raduis <= 0)
+        {
+            speed_x *= -1;
+        };
     };
+};
+class Paddle
+{
 };
 Ball ball;
 
@@ -39,8 +53,9 @@ int main()
     while (WindowShouldClose() == false)
     {
         BeginDrawing();
-
+        ball.update_position();
         // middl2 line
+        ClearBackground(BLACK);
         DrawLine(screen_width / 2, 0, screen_width / 2, screen_height, WHITE);
         // draww ball
         ball.Draw();
