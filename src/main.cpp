@@ -119,20 +119,33 @@ int main()
     while (WindowShouldClose() == false)
     {
         BeginDrawing();
+        // updating positions
         ball.update_position();
         player.update_position();
         npc.update_position(ball.y);
-        // middl2 line
+
+        // check for collision
+        if (CheckCollisionCircleRec(Vector2{ball.x, ball.y}, (float)ball.raduis, Rectangle{player.x, player.y, player.width, player.height}))
+        {
+            ball.speed_x *= -1;
+        };
+        if (CheckCollisionCircleRec(Vector2{ball.x, ball.y}, (float)ball.raduis, Rectangle{npc.x, npc.y, npc.width, npc.height}))
+        {
+            ball.speed_x *= -1;
+        };
+        // m
+        // middle line
+
         ClearBackground(BLACK);
         DrawLine(screen_width / 2, 0, screen_width / 2, screen_height, WHITE);
         // draww ball
+
+        // render
         ball.Draw();
         npc.Draw();
-        // const int paddle_height = 120;
-        // DrawRectangle(10, screen_height / 2 - paddle_height / 2, 25, paddle_height, WHITE);
-        // left
+
         player.Draw();
-        // DrawRectangle(screen_width - 35, screen_height / 2 - paddle_height / 2, 25, paddle_height, WHITE);
+
         EndDrawing();
     }
     CloseWindow();
