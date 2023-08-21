@@ -17,6 +17,13 @@ int main()
     while (WindowShouldClose() == false)
     {
         BeginDrawing();
+        // draw ball
+        DrawCircle(screen_width / 2, screen_height / 2, 20, RED);
+        // Draw paddle
+        const int paddle_height = 120;
+        DrawRectangle(10, screen_height / 2 - paddle_height / 2, 25, paddle_height, WHITE);
+        // left
+        DrawRectangle(screen_width - 35, screen_height / 2 - paddle_height / 2, 25, paddle_height, WHITE);
         EndDrawing();
     }
     CloseWindow();
