@@ -275,7 +275,7 @@ int main()
 
             BeginDrawing();
             // Spawn a power-up every 300 frames as an example
-            if (framesSinceLastPowerUp >= 300)
+            if (framesSinceLastPowerUp >= 50)
             {
                 SpawnPowerUp();
                 framesSinceLastPowerUp = 0;
