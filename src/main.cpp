@@ -2,6 +2,9 @@
 #include <raylib.h>
 
 using namespace std;
+// scores
+int npc_score = 0;
+int player_score = 0;
 class Ball
 {
 public:
@@ -23,11 +26,27 @@ public:
         {
             speed_y *= -1;
         };
-        if (x + raduis >= GetScreenWidth() || x - raduis <= 0)
+        if (x + raduis >= GetScreenWidth())
         {
-            speed_x *= -1;
+            npc_score++;
+            ResetBall();
+        }
+
+        if (x - raduis <= 0)
+        {
+            player_score++;
+            ResetBall();
+            // speed_x *= -1;
         };
     };
+    void ResetBall()
+    {
+        x = GetScreenWidth() / 2;
+        x = GetScreenWidth() / 2;
+        int speed_choice[2] = {-1, 1};
+        speed_x *= speed_choice[GetRandomValue(0, 1)];
+        speed_y *= speed_choice[GetRandomValue(0, 1)];
+    }
 };
 class Paddle
 {
@@ -145,6 +164,8 @@ int main()
         npc.Draw();
 
         player.Draw();
+        DrawText(TextFormat("%i", npc_score), screen_width / 4 - 20, 20, 80, WHITE);
+        DrawText(TextFormat("%i", player_score), 3 * screen_width / 4 - 20, 20, 80, WHITE);
 
         EndDrawing();
     }
