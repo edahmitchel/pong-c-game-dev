@@ -2,6 +2,23 @@
 #include <raylib.h>
 
 using namespace std;
+class Ball
+{
+public:
+    float x, y;
+    int speed_x, speed_y;
+    int raduis;
+    void Draw()
+    {
+
+        // draw ball
+        DrawCircle(x, y, raduis, RED);
+    };
+    void update_position(){
+
+    };
+};
+Ball ball;
 
 int main()
 {
@@ -13,12 +30,20 @@ int main()
     InitWindow(screen_width, screen_height, "pong game");
     // speed.frame rate
     SetTargetFPS(60);
+    ball.raduis = 20;
+    ball.x = screen_width / 2;
+    ball.y = screen_height / 2;
+    ball.speed_x = 7;
+    ball.speed_y = 7;
     // game loop
     while (WindowShouldClose() == false)
     {
         BeginDrawing();
-        // draw ball
-        DrawCircle(screen_width / 2, screen_height / 2, 20, RED);
+
+        // middl2 line
+        DrawLine(screen_width / 2, 0, screen_width / 2, screen_height, WHITE);
+        // draww ball
+        ball.Draw();
         // Draw paddle
         const int paddle_height = 120;
         DrawRectangle(10, screen_height / 2 - paddle_height / 2, 25, paddle_height, WHITE);
