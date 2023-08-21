@@ -49,6 +49,14 @@ public:
         {
             y = y + speed;
         };
+        if (y <= 0)
+        {
+            y = 0;
+        };
+        if (y + height >= GetScreenHeight())
+        {
+            y = GetScreenHeight() - height;
+        };
     };
 };
 Ball ball;
