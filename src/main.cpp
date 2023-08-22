@@ -26,6 +26,8 @@ class PowerUp
 {
 public:
     Vector2 position;
+    float speed_x = 3; // added speed for the power-up
+    float speed_y = 3; // added speed for the power-up
     PowerUpType type;
     bool active = false;
     int radius = 15;
@@ -42,10 +44,26 @@ public:
             color = PINK;
             break;
         case FASTER_PADDLE:
-            color = BLUE;
+            color = ORANGE;
             break;
         }
         DrawCircleV(position, radius, color);
+    }
+    void update_position()
+    {
+        position.x += speed_x;
+        position.y += speed_y;
+
+        // Check collision with the game window and change direction
+        if (position.y + radius >= GetScreenHeight() || position.y - radius <= 0)
+        {
+            speed_y *= -1;
+        }
+
+        if (position.x + radius >= GetScreenWidth() || position.x - radius <= 0)
+        {
+            speed_x *= -1;
+        }
     }
 };
 PowerUp powerUp;
@@ -233,7 +251,6 @@ int main()
     // game window dimensions
     const int screen_width = 1200;
     const int screen_height = 800;
-    framesSinceLastPowerUp++;
 
     InitWindow(screen_width, screen_height, "pong game");
     // speed.frame rate
@@ -259,7 +276,8 @@ int main()
     npcShooter.width = 25;
     npcShooter.x = 30;
     npcShooter.y = screen_height / 2 - npc.height / 2;
-    npcShooter.speed = 9;
+    npcShooter.speed = 4;
+    npcShooter.speed_y = 4;
 
     playerProjectile.radius = 10;    // Adjust the value as needed
     npcProjectile.radius = 10;       // Adjust the value as needed
@@ -274,8 +292,9 @@ int main()
         {
 
             BeginDrawing();
+            framesSinceLastPowerUp++;
             // Spawn a power-up every 300 frames as an example
-            if (framesSinceLastPowerUp >= 50)
+            if (framesSinceLastPowerUp >= 150)
             {
                 SpawnPowerUp();
                 framesSinceLastPowerUp = 0;
@@ -286,8 +305,12 @@ int main()
             npc.update_position(ball.y);
             npcShooter.update_position_vertical();
             // Update projectile positions...
-            playerProjectile.UpdatePosition();
-            npcProjectile.UpdatePosition();
+            if ((npcShooter.active))
+            {
+                playerProjectile.UpdatePosition();
+                /* code */
+                npcProjectile.UpdatePosition();
+            }
 
             // check for collision
             if (CheckCollisionCircleRec(Vector2{ball.x, ball.y}, (float)ball.raduis, Rectangle{player.x, player.y, player.width, player.height}))
@@ -303,6 +326,7 @@ int main()
             {
                 // npc_score = npc_score - 1;
                 npcShooter.active = false; //
+                // npcProjectile.active = false
                 playerProjectile.active = false;
             }
 
@@ -315,32 +339,39 @@ int main()
             if (powerUp.active)
             {
                 // For ball-speed-changing power-ups
-                if (CheckCollisionCircles({ball.x, ball.y}, ball.raduis, powerUp.position, powerUp.radius))
+                if (CheckCollisionCircleRec(powerUp.position, powerUp.radius, {player.x, player.y, player.width, player.height}))
                 {
                     switch (powerUp.type)
                     {
                     case FASTER_BALL:
                         ball.speed_x *= 1.5;
                         ball.speed_y *= 1.5;
+                        powerUp.active = false; // deactivate after collision
                         break;
                     case SLOWER_BALL:
                         ball.speed_x *= 0.5;
                         ball.speed_y *= 0.5;
+                        powerUp.active = false; // deactivate after collision
                         break;
+                    case FASTER_PADDLE:
+                        player.speed *= 1.5;
+                        powerUp.active = false;
+                        break;
+
                     default:
                         break;
                     }
-                    powerUp.active = false; // deactivate after collision
                 }
 
                 // For paddle-speed-changing power-up
-                if (CheckCollisionCircleRec(powerUp.position, powerUp.radius, {player.x, player.y, player.width, player.height}) || CheckCollisionCircleRec(powerUp.position, powerUp.radius, {npc.x, npc.y, npc.width, npc.height}))
+                // if (CheckCollisionCircleRec(powerUp.position, powerUp.radius, {player.x, player.y, player.width, player.height}) && powerUp.type == FASTER_PADDLE)
+                // {
+                //     player.speed *= 1.5;
+                //     powerUp.active = false; // deactivate after collision
+                // }
+                if (CheckCollisionCircleRec(powerUp.position, powerUp.radius, {npc.x, npc.y, npc.width, npc.height}) && powerUp.type == FASTER_PADDLE)
                 {
-                    if (powerUp.type == FASTER_PADDLE)
-                    {
-                        player.speed *= 1.5;
-                        npc.speed *= 1.5;
-                    }
+                    npc.speed *= 1.5;
                     powerUp.active = false; // deactivate after collision
                 }
             }
@@ -348,12 +379,17 @@ int main()
             // Draw power-up if active
             if (powerUp.active)
             {
+                powerUp.update_position();
                 powerUp.Draw();
             }
 
             // Draw projectiles...
-            playerProjectile.Draw();
-            npcProjectile.Draw();
+            if (npcShooter.active)
+            {
+                playerProjectile.Draw();
+
+                npcProjectile.Draw();
+            }
 
             // Check for input to shoot projectiles...
             if (IsKeyPressed(KEY_SPACE))
@@ -387,8 +423,12 @@ int main()
             // draww ball
 
             // render
-            playerProjectile.Draw();
-            npcProjectile.Draw();
+            if (npcShooter.active)
+            {
+
+                playerProjectile.Draw();
+                npcProjectile.Draw();
+            }
             ball.Draw();
             npc.Draw();
             if (npcShooter.active) // Only draw if active
